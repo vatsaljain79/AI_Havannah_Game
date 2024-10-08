@@ -1,509 +1,11 @@
+
+
+
 import time
 import math
 import random
 import numpy as np
 from helper import *
-
-def check_my_win(board: np.array, move: Tuple[int, int], player_num: int, path:List[Tuple[int, int]]=None) -> Tuple[bool, Union[str, None]]:
-    board = (board == player_num)
-    if check_ring(board, move):
-        return True, "ring"
-    
-    win, way = check_fork_and_bridge(board, move)
-    if win:
-        return True, way
-    return False, None
-        
-def is_really_alkene(x,x1,y1,board):
-    l=set(get_neighbours(len(board),x)).intersection(get_neighbours(len(board),(x1,y1)))
-    for i in l:
-        if board[i[0]][i[1]]!=0:
-            return False
-    return True
-
-def is_adjacent(move,pnum,board):
-        neighbours=get_neighbours(len(board),move)
-        h=[]
-        for i in neighbours:
-            # h.extend(get_neighbours(len(board),i))
-            if board[i[0]][i[1]]==pnum:
-                return True
-        # for i in h:
-        #     if board[i[0]][i[1]]==pnum:
-        #         return True
-        return False
-def alkene_detection(move,board,player):
-    x=move
-    c=[]
-    d=[]
-    if(x[1]==(len(board)-1)//2):
-        if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]-2,board):
-            if((board[x[0]-1][x[1]-2])==player):
-                c.append((x[0]-1,x[1]-2))
-            else:
-                d.append((x[0]-1,x[1]-2))
-        if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]+2,board):
-            if((board[x[0]-1][x[1]+2])==player):
-                c.append((x[0]-1,x[1]+2))
-            else:
-                d.append((x[0]-1,x[1]+2))
-        if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]-2,x[1]-1,board):
-            if((board[x[0]-2][x[1]-1])==player):
-                c.append((x[0]-2,x[1]-1))
-            else:
-                d.append((x[0]-2,x[1]-1))
-        if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]-2,x[1]+1,board):
-            if((board[x[0]-2][x[1]+1])==player):
-                c.append((x[0]-2,x[1]+1))
-            else:
-                d.append((x[0]-2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]-1,board):
-            if((board[x[0]+1][x[1]-1])==player):
-                c.append((x[0]+1,x[1]-1))
-            else:
-                d.append((x[0]+1,x[1]-1))
-        if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]+1,board):
-            if((board[x[0]+1][x[1]+1])==player):
-                c.append((x[0]+1,x[1]+1))
-            else:
-                d.append((x[0]+1,x[1]+1))
-    elif(x[1]==((len(board)-1)//2)-1):
-        if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]-2,board):
-            if((board[x[0]-1][x[1]-2])==player):
-                c.append((x[0]-1,x[1]-2))
-            else:
-                d.append((x[0]-1,x[1]-2))
-        if is_valid(x[0],x[1]+2,len(board)) and board[x[0]][x[1]+2] in [player,3-player] and is_really_alkene(x,x[0],x[1]+2,board):
-            if((board[x[0]][x[1]+2])==player):
-                c.append((x[0],x[1]+2))
-            else:
-                d.append((x[0],x[1]+2))
-        if is_valid(x[0]-1,x[1]+1,len(board)) and board[x[0]-1][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]+1,board):
-            if((board[x[0]-1][x[1]+1])==player):
-                c.append((x[0]-1,x[1]+1))
-            else:
-                d.append((x[0]-1,x[1]+1))
-        if is_valid(x[0]+2,x[1]+1,len(board)) and board[x[0]+2][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]+2,x[1]+1,board):
-            if((board[x[0]+2][x[1]+1])==player):
-                c.append((x[0]+2,x[1]+1))
-            else:
-                d.append((x[0]+2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]-1,board):
-            if((board[x[0]+1][x[1]-1])==player):
-                c.append((x[0]+1,x[1]-1))
-            else:
-                d.append((x[0]+1,x[1]-1))
-        if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]-2,x[1]-1,board):
-            if((board[x[0]-2][x[1]-1])==player):
-                c.append((x[0]-2,x[1]-1))
-            else:
-                d.append((x[0]-2,x[1]-1))
-    elif(x[1]==((len(board)-1)//2)+1):
-        if is_valid(x[0]-1,x[1]-1,len(board)) and board[x[0]-1][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]-1,board):
-            if((board[x[0]-1][x[1]-1])==player):
-                c.append((x[0]-1,x[1]-1))
-            else:
-                d.append((x[0]-1,x[1]-1))
-        if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]+2,board):
-            if((board[x[0]-1][x[1]+2])==player):
-                c.append((x[0]-1,x[1]+2))
-            else:
-                d.append((x[0]-1,x[1]+2))
-        if is_valid(x[0]+2,x[1]-1,len(board)) and board[x[0]+2][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]+2,x[1]-1,board):
-            if((board[x[0]+2][x[1]-1])==player):
-                c.append((x[0]+2,x[1]-1))
-            else:
-                d.append((x[0]+2,x[1]-1))
-        if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]-2,x[1]+1,board):
-            if((board[x[0]-2][x[1]+1])==player):
-                c.append((x[0]-2,x[1]+1))
-            else:
-                d.append((x[0]-2,x[1]+1))
-        if is_valid(x[0],x[1]-2,len(board)) and board[x[0]][x[1]-2] in [player,3-player] and is_really_alkene(x,x[0],x[1]-2,board):
-            if((board[x[0]][x[1]-2])==player):
-                c.append((x[0],x[1]-2))
-            else:
-                d.append((x[0],x[1]-2))
-        if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]+1,board):
-            if((board[x[0]+1][x[1]+1])==player):
-                c.append((x[0]+1,x[1]+1))
-            else:
-                d.append((x[0]+1,x[1]+1))
-    elif(x[1]>((len(board)-1)//2)+1):
-        if is_valid(x[0]-1,x[1]-1,len(board)) and board[x[0]-1][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]-1,board):
-            if((board[x[0]-1][x[1]-1])==player):
-                c.append((x[0]-1,x[1]-1))
-            else:
-                d.append((x[0]-1,x[1]-1))
-        if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]+2,board):
-            if((board[x[0]-1][x[1]+2])==player):
-                c.append((x[0]-1,x[1]+2))
-            else:
-                d.append((x[0]-1,x[1]+2))
-        if is_valid(x[0]+2,x[1]-1,len(board)) and board[x[0]+2][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]+2,x[1]-1,board):
-            if((board[x[0]+2][x[1]-1])==player):
-                c.append((x[0]+2,x[1]-1))
-            else:
-                d.append((x[0]+2,x[1]-1))
-        if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]-2,x[1]+1,board):
-            if((board[x[0]-2][x[1]+1])==player):
-                c.append((x[0]-2,x[1]+1))
-            else:
-                d.append((x[0]-2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-2,len(board)) and board[x[0]+1][x[1]-2] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]-2,board):
-            if((board[x[0]+1][x[1]-2])==player):
-                c.append((x[0]+1,x[1]-2))
-            else:
-                d.append((x[0]+1,x[1]-2))
-        if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]+1,board):
-            if((board[x[0]+1][x[1]+1])==player):
-                c.append((x[0]+1,x[1]+1))
-            else:
-                d.append((x[0]+1,x[1]+1))
-    elif(x[1]<((len(board)-1)//2)-1):
-        if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]-2,board):
-            if((board[x[0]-1][x[1]-2])==player):
-                c.append((x[0]-1,x[1]-2))
-            else:
-                d.append((x[0]-1,x[1]-2))
-        if is_valid(x[0]+1,x[1]+2,len(board)) and board[x[0]+1][x[1]+2] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]+2,board):
-            if((board[x[0]+1][x[1]+2])==player):
-                c.append((x[0]+1,x[1]+2))
-            else:
-                d.append((x[0]+1,x[1]+2))                
-        if is_valid(x[0]-1,x[1]+1,len(board)) and board[x[0]-1][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]-1,x[1]+1,board):
-            if((board[x[0]-1][x[1]+1])==player):
-                c.append((x[0]-1,x[1]+1))
-            else:
-                d.append((x[0]-1,x[1]+1))
-        if is_valid(x[0]+2,x[1]+1,len(board)) and board[x[0]+2][x[1]+1] in [player,3-player] and is_really_alkene(x,x[0]+2,x[1]+1,board):
-            if((board[x[0]+2][x[1]+1])==player):
-                c.append((x[0]+2,x[1]+1))
-            else:
-                d.append((x[0]+2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]+1,x[1]-1,board):
-            if((board[x[0]+1][x[1]-1])==player):
-                c.append((x[0]+1,x[1]-1))
-            else:
-                d.append((x[0]+1,x[1]-1))
-        if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1] in [player,3-player] and is_really_alkene(x,x[0]-2,x[1]-1,board):
-            if((board[x[0]-2][x[1]-1])==player):
-                c.append((x[0]-2,x[1]-1))
-            else:
-                d.append((x[0]-2,x[1]-1))
-    f=c.copy()
-    if(len(c)==0):
-        if(len(d)==0):
-            c=0
-        elif(len(d)==1):
-            c=0
-        elif(len(d)==2):
-            m1=d[0]
-            m2=d[1]
-            l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-            if(len(l)==0):
-                c=1.8700828
-            else:
-                c=0
-        else:
-            c=1.8700828
-    elif(len(c)==1):
-        if(len(d)==0):
-            c=1
-        elif(len(d)==1):
-            c=1.5  
-        elif(len(d)==2):
-            m1=d[0]
-            m2=d[1]
-            l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-            if(len(l)==0):
-                c=1.8700828
-            else:
-                c=1.5
-        else:
-            c=1.8700828
-    elif(len(c)==2):
-        m1=c[0]
-        m2=c[1]
-        l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-        if(len(l)==0):
-            c=1.8700828
-        else:
-            if(len(d)==0):
-                c=1
-            elif(len(d)==1):
-                c=1.5  
-            elif(len(d)==2):
-                m1=d[0]
-                m2=d[1]
-                l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-                if(len(l)==0):
-                    c=1.8700828
-                else:
-                    c=1.5
-            else:
-                c=1.8700828
-    else:
-        c=1.8700828
-    check_list=[]
-    if(c==1.8700828 and len(f)>=2):
-        for i in f:
-            l=set(get_neighbours(len(board),move)).intersection(get_neighbours(len(board),i))
-            l=tuple(l)
-            check_list.append(l)
-    return c,check_list
-
-def alkene_detection_todo(move,board,player):
-    x=move
-    c=[]
-    d=[]
-    if(x[1]==(len(board)-1)//2):
-        if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2] in [player,3-player]:
-            if(board[x[0]-1][x[1]-2]==player):
-                c.append((x[0]-1,x[1]-2))
-            else:
-                d.append((x[0]-1,x[1]-2))
-        if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2] in [player,3-player]:
-            if(board[x[0]-1][x[1]+2]==player):
-                c.append((x[0]-1,x[1]+2))
-            else:
-                d.append((x[0]-1,x[1]+2))
-        if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1] in [player,3-player]:
-            if(board[x[0]-2][x[1]-1]==player):
-                c.append((x[0]-2,x[1]-1))
-            else:
-                d.append((x[0]-2,x[1]-1))
-        if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1] in [player,3-player]:
-            if(board[x[0]-2][x[1]+1]==player):
-                c.append((x[0]-2,x[1]+1))
-            else:
-                d.append((x[0]-2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1] in [player,3-player]:
-            if(board[x[0]+1][x[1]-1]==player):
-                c.append((x[0]+1,x[1]-1))
-            else:
-                d.append((x[0]+1,x[1]-1))
-        if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1] in [player,3-player]:
-            if(board[x[0]+1][x[1]+1]==player):
-                c.append((x[0]+1,x[1]+1))
-            else:
-                d.append((x[0]+1,x[1]+1))
-    elif(x[1]==((len(board)-1)//2)-1):
-        if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2] in [player,3-player]:
-            if(board[x[0]-1][x[1]-2]==player):
-                c.append((x[0]-1,x[1]-2))
-            else:
-                d.append((x[0]-1,x[1]-2))
-        if is_valid(x[0],x[1]+2,len(board)) and board[x[0]][x[1]+2] in [player,3-player]:
-            if(board[x[0]][x[1]+2]==player):
-                c.append((x[0],x[1]+2))
-            else:
-                d.append((x[0],x[1]+2))
-        if is_valid(x[0]-1,x[1]+1,len(board)) and board[x[0]-1][x[1]+1] in [player,3-player]:
-            if(board[x[0]-1][x[1]+1]==player):
-                c.append((x[0]-1,x[1]+1))
-            else:
-                d.append((x[0]-1,x[1]+1))
-        if is_valid(x[0]+2,x[1]+1,len(board)) and board[x[0]+2][x[1]+1] in [player,3-player]:
-            if(board[x[0]+2][x[1]+1]==player):
-                c.append((x[0]+2,x[1]+1))
-            else:
-                d.append((x[0]+2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1] in [player,3-player]:
-            if(board[x[0]+1][x[1]-1]==player):
-                c.append((x[0]+1,x[1]-1))
-            else:
-                d.append((x[0]+1,x[1]-1))
-        if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1] in [player,3-player]:
-            if(board[x[0]-2][x[1]-1]==player):
-                c.append((x[0]-2,x[1]-1))
-            else:
-                d.append((x[0]-2,x[1]-1))
-    elif(x[1]==((len(board)-1)//2)+1):
-        if is_valid(x[0]-1,x[1]-1,len(board)) and board[x[0]-1][x[1]-1] in [player,3-player]:
-            if(board[x[0]-1][x[1]-1]==player):
-                c.append((x[0]-1,x[1]-1))
-            else:
-                d.append((x[0]-1,x[1]-1))
-        if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2] in [player,3-player]:
-            if(board[x[0]-1][x[1]+2]==player):
-                c.append((x[0]-1,x[1]+2))
-            else:
-                d.append((x[0]-1,x[1]+2))
-        if is_valid(x[0]+2,x[1]-1,len(board)) and board[x[0]+2][x[1]-1] in [player,3-player]:
-            if(board[x[0]+2][x[1]-1]==player):
-                c.append((x[0]+2,x[1]-1))
-            else:
-                d.append((x[0]+2,x[1]-1))
-        if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1] in [player,3-player]:
-            if(board[x[0]-2][x[1]+1]==player):
-                c.append((x[0]-2,x[1]+1))
-            else:
-                d.append((x[0]-2,x[1]+1))
-        if is_valid(x[0],x[1]-2,len(board)) and board[x[0]][x[1]-2] in [player,3-player]:
-            if(board[x[0]][x[1]-2]==player):
-                c.append((x[0],x[1]-2))
-            else:
-                d.append((x[0],x[1]-2))
-        if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1] in [player,3-player]:
-            if(board[x[0]+1][x[1]+1]==player):
-                c.append((x[0]+1,x[1]+1))
-            else:
-                d.append((x[0]+1,x[1]+1))
-    elif(x[1]>((len(board)-1)//2)+1):
-        if is_valid(x[0]-1,x[1]-1,len(board)) and board[x[0]-1][x[1]-1] in [player,3-player]:
-            if(board[x[0]-1][x[1]-1]==player):
-                c.append((x[0]-1,x[1]-1))
-            else:
-                d.append((x[0]-1,x[1]-1))
-        if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2] in [player,3-player]:
-            if(board[x[0]-1][x[1]+2]==player):
-                c.append((x[0]-1,x[1]+2))
-            else:
-                d.append((x[0]-1,x[1]+2))
-        if is_valid(x[0]+2,x[1]-1,len(board)) and board[x[0]+2][x[1]-1] in [player,3-player]:
-            if(board[x[0]+2][x[1]-1]==player):
-                c.append((x[0]+2,x[1]-1))
-            else:
-                d.append((x[0]+2,x[1]-1))
-        if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1] in [player,3-player]:
-            if(board[x[0]-2][x[1]+1]==player):
-                c.append((x[0]-2,x[1]+1))
-            else:
-                d.append((x[0]-2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-2,len(board)) and board[x[0]+1][x[1]-2] in [player,3-player]:
-            if(board[x[0]+1][x[1]-2]==player):
-                c.append((x[0]+1,x[1]-2))
-            else:
-                d.append((x[0]+1,x[1]-2))
-        if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1] in [player,3-player]:
-            if(board[x[0]+1][x[1]+1]==player):
-                c.append((x[0]+1,x[1]+1))
-            else:
-                d.append((x[0]+1,x[1]+1))
-    elif(x[1]<((len(board)-1)//2)-1):
-        # print(board[0][0])
-        # print(board[2][4])
-        if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2] in [player,3-player]:
-            if(board[x[0]-1][x[1]-2]==player):
-                c.append((x[0]-1,x[1]-2))
-            else:
-                d.append((x[0]-1,x[1]-2))
-        if is_valid(x[0]+1,x[1]+2,len(board)) and board[x[0]+1][x[1]+2] in [player,3-player]:
-            if(board[x[0]+1][x[1]+2]==player):
-                c.append((x[0]+1,x[1]+2))
-            else:
-                d.append((x[0]+1,x[1]+2))                
-        if is_valid(x[0]-1,x[1]+1,len(board)) and board[x[0]-1][x[1]+1] in [player,3-player]:
-            if(board[x[0]-1][x[1]+1]==player):
-                c.append((x[0]-1,x[1]+1))
-            else:
-                d.append((x[0]-1,x[1]+1))
-        if is_valid(x[0]+2,x[1]+1,len(board)) and board[x[0]+2][x[1]+1] in [player,3-player]:
-            if(board[x[0]+2][x[1]+1]==player):
-                c.append((x[0]+2,x[1]+1))
-            else:
-                d.append((x[0]+2,x[1]+1))
-        if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1] in [player,3-player]:
-            if(board[x[0]+1][x[1]-1]==player):
-                c.append((x[0]+1,x[1]-1))
-            else:
-                d.append((x[0]+1,x[1]-1))
-        if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1] in [player,3-player]:
-            if(board[x[0]-2][x[1]-1]==player):
-                c.append((x[0]-2,x[1]-1))
-            else:
-                d.append((x[0]-2,x[1]-1))
-    # if(move==(1,2)):
-    #     print(c,d)
-    f=c.copy()
-    if(len(c)==0):
-        if(len(d)==0):
-            c=0
-        elif(len(d)==1):
-            c=0
-        elif(len(d)==2):
-            m1=d[0]
-            m2=d[1]
-            l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-            if(len(l)==0):
-                c=1.8700828
-            else:
-                c=0
-        else:
-            c=1.8700828
-    elif(len(c)==1):
-        if(len(d)==0):
-            c=1
-        elif(len(d)==1):
-            c=1.5  
-        elif(len(d)==2):
-            m1=d[0]
-            m2=d[1]
-            l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-            if(len(l)==0):
-                c=1.8700828
-            else:
-                c=1.5
-        else:
-            c=1.8700828
-    elif(len(c)==2):
-        m1=c[0]
-        m2=c[1]
-        l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-        if(len(l)==0):
-            c=1.8700828
-        else:
-            if(len(d)==0):
-                c=1
-            elif(len(d)==1):
-                c=1.5  
-            elif(len(d)==2):
-                m1=d[0]
-                m2=d[1]
-                l=set(get_neighbours(len(board),m2)).intersection(get_neighbours(len(board),m1))
-                if(len(l)==0):
-                    c=1.8700828
-                else:
-                    c=1.5
-            else:
-                c=1.8700828
-    else:
-        c=1.8700828
-    check_list=[]
-    if(c==1.8700828 and len(f)>=2):
-        for i in f:
-            l=set(get_neighbours(len(board),move)).intersection(get_neighbours(len(board),i))
-            l=tuple(l)
-            check_list.append(l)
-    return c,check_list
-
-def get_my_valid_actions(board: np.array, player: int = None) -> List[Tuple[int, int]]:
-    '''
-    Returns all the valid actions in the provided state `board`
-    
-    # Parameters
-    `board (numpy array)`: Game board
-
-    # Returns
-    List[Tuple[int]]: List of valid actions, coordinates of the valid moves
-    '''
-    valid_moves = np.argwhere(board == 0)
-    n_val_moves=[]
-    for x in valid_moves:
-        x=tuple(x)
-        if get_corner(x,len(board))!=-1:
-            n_val_moves.append(x)
-        elif get_edge(x,len(board))!=-1:
-            n_val_moves.append(x)
-        elif is_adjacent(x,player,board) or is_adjacent(x,3-player,board):
-            n_val_moves.append(x)
-        elif alkene_detection(x,board,player)[0]:
-            n_val_moves.append(x)
-
-          
-    # valid_moves = [tuple(move) for move in valid_moves]
-    return n_val_moves
 
 class Node:
     def __init__(self, state, parent=None):
@@ -514,416 +16,313 @@ class Node:
         self.visits = 0
         self.player = None
         self.move=None
-        self.children_left=set()
-        
-
+        self.children_left={}
 
 class AIPlayer:
 
-
     def __init__(self, player_number: int, timer):
         """
-        Initialize the AIPlayer Agent
+        Intitialize the AIPlayer Agent
 
-        Parameters:
-        player_number (int): Current player number, num==1 starts the game
-        timer: Timer object used to fetch the remaining time for any player
+        # Parameters
+        `player_number (int)`: Current player number, num==1 starts the game
+        
+        `timer: Timer`
+            - a Timer object that can be used to fetch the remaining time for any player
+            - Run `fetch_remaining_time(timer, player_number)` to fetch remaining time of a player
         """
         self.player_number = player_number
         self.type = 'ai'
         self.player_string = 'Player {}: ai'.format(player_number)
         self.timer = timer
-        self.counter=0
-        self.prev_board = None
+    
+    def find_winning_position(self, state: np.array, player_number: int) -> Tuple[int, int]:
+        valid_actions= get_valid_actions(state, player_number)
+        for action in valid_actions:
+            new_state = state.copy()
+            new_state[action] = player_number
+            if check_win(new_state, action, player_number)[0]:
+                # print(new_state,action)
+                return action
+        return None
+    
+    def evaluate_double_moves(self, state, player_number, moves):
+        new_state=state.copy()
+        for move in moves:
+            new_state[move[0]][move[1]]=player_number
+            moves.remove(move)
+            no_of_wins=0
+            for move2 in moves:
+                new_state[move2[0]][move2[1]]=player_number
+                if check_win(new_state, move2, player_number)[0]:
+                    no_of_wins+=1
+                    if no_of_wins==2:
+                        return move
+                new_state[move2[0]][move2[1]]=0 
+            new_state[move[0]][move[1]]=0
+            moves.add(move)
+            
+        return None
+    
+    def evaluate_triple_moves(self,state, player_number, moves, no_of_random=50):
+        dc = {(10**6, 10**6): 0}
+        # print(type(moves))
+        # print(moves)
+        moves_random1 = random.sample(moves, min(no_of_random, len(moves)))
+        new_state = state.copy()
+        for move in moves_random1:
+            new_state[move[0]][move[1]] = player_number
+
+            # Check for second layer
+            moves_random2 = random.sample(moves, min(no_of_random, len(moves)))
+            if move in moves_random2:
+                moves_random2.remove(move)
+
+            for move2 in moves_random2:
+                new_state[move2[0]][move2[1]] = player_number
+
+                # Check for third layer
+                moves_random3 = random.sample(moves, min(no_of_random, len(moves)))
+                if move in moves_random3:
+                    moves_random3.remove(move)
+                if move2 in moves_random3:
+                    moves_random3.remove(move2)
+
+                for move3 in moves_random3:
+                    new_state[move3[0]][move3[1]] = player_number
+
+                    # Check if the move results in a win
+                    if check_win(new_state, move3, player_number)[0]:
+                        if move not in dc:
+                            dc[move] = 0
+                        dc[move] += 1
+
+                    new_state[move3[0]][move3[1]] = 0
+
+                new_state[move2[0]][move2[1]] = 0
+
+            new_state[move[0]][move[1]] = 0
+
+        # Find the best move
+        max_value = -1
+        max_key = (10**6, 10**6)
+        for i in dc:
+            if dc[i] > max_value:
+                max_value = dc[i]
+                max_key = i
+
+        for i in dc:
+            if dc[i] == max_value and max_value > 4:
+                return max_key
+
+        return None  # If no move is found
+    
+    def evaluate_moves_4_layers(self,state, player_number, mov, no_of_random):
+        # Set of available moves
+        if len(mov)>25:
+            return None
+        dc = {(10**6, 10**6): 0}
+        new_state = state.copy()
+        # Random sampling for the first layer of moves
+        moves_random1 = random.sample(mov, min(no_of_random, len(mov)))
+        for move in moves_random1:
+            new_state[move[0]][move[1]] = player_number
+            
+            # Second layer of moves
+            moves_random2 = random.sample(mov, min(no_of_random, len(mov)))
+            if move in moves_random2:
+                moves_random2.remove(move)
+            for move2 in moves_random2:
+                new_state[move2[0]][move2[1]] = player_number
+
+                # Third layer of moves
+                moves_random3 = random.sample(mov, min(no_of_random, len(mov)))
+                if move in moves_random3:
+                    moves_random3.remove(move)
+                if move2 in moves_random3:
+                    moves_random3.remove(move2)
+                for move3 in moves_random3:
+                    new_state[move3[0]][move3[1]] = player_number
+
+                    # Fourth layer of moves
+                    moves_random4 = random.sample(mov, min(no_of_random, len(mov)))
+                    if move in moves_random4:
+                        moves_random4.remove(move)
+                    if move2 in moves_random4:
+                        moves_random4.remove(move2)
+                    if move3 in moves_random4:
+                        moves_random4.remove(move3)
+                    for move4 in moves_random4:
+                        new_state[move4[0]][move4[1]] = player_number
+
+                        # Check if winning condition is met for the player
+                        if check_win(new_state, move4, player_number)[0]:
+                            if move not in dc:
+                                dc[move] = 0
+                            dc[move] += 1
+
+                        # Undo fourth layer move
+                        new_state[move4[0]][move4[1]] = 0
+
+                    # Undo third layer move
+                    new_state[move3[0]][move3[1]] = 0
+                
+                # Undo second layer move
+                new_state[move2[0]][move2[1]] = 0
+
+            # Undo first layer move
+            new_state[move[0]][move[1]] = 0
+
+        # Find the move with the maximum value
+        max_val = -1
+        max_key = (10**6, 10**6)
+        for i in dc:
+            if dc[i] > max_val:
+                max_val = dc[i]
+                max_key = i
         
-    def get_corner_alkenes(self,corner,board_size):
-        if corner[0]==0 and corner[1]==0:
-            return [(1,2),(2,1)]
-        elif corner[0]==board_size-1 and corner[1]==0:
-            return [(board_size-2,1),(board_size,2)]
-        elif corner[0]==0 and corner[1]==board_size-1:
-            return [(1,board_size-2),(1,board_size)]
-        elif corner[0]==2*board_size-2 and corner[1]==board_size-1:
-            return [(corner[0]-2,corner[1]+1),(corner[0]-2,corner[1]-1)]
-        elif corner[0]==0 and corner[1]==2*board_size-2:
-            return [(corner[0]+1,corner[1]-2),(corner[0]+2,corner[1]-1)]
-        elif corner[0]==board_size-1 and corner[1]==2*board_size-2:
-            return [(corner[0]-1,corner[1]-1),(corner[0]+1,corner[1]-2)]
-        
-    def get_move(self, state: np.array) -> Tuple[int, int]:
+        # Return the best move if it satisfies the winning condition
+        for i in dc:
+            if dc[i] == max_val and max_val > 10:
+                return max_key
+        return None
+
+
+
+    def get_move(self, state: np.array,should:bool=False) -> Tuple[int, int]:
+        # print(get_neighbours(len(state), (3, 3)))
         """
-        Given the current state of the board, return the next move.
+        Given the current state of the board, return the next move
 
-        Parameters:
-        state: Tuple[np.array] - A numpy array containing the state of the board.
+        # Parameters
+        `state: Tuple[np.array]`
+            - a numpy array containing the state of the board using the following encoding:
+            - the board maintains its same two dimensions
+            - spaces that are unoccupied are marked as 0
+            - spaces that are blocked are marked as 3
+            - spaces that are occupied by player 1 have a 1 in them
+            - spaces that are occupied by player 2 have a 2 in them
 
-        Returns:
+        # Returns
         Tuple[int, int]: action (coordinates of a board cell)
         """
-        if(self.counter==0):
-            self.counter+=1
-            a=get_all_corners(len(state))
-            if(state[a[0]]==0):
-                self.prev_board=state.copy()
-                self.prev_board[a[0][0]][a[0][1]]=self.player_number
-                return a[0]
-            else:
-                self.prev_board=state.copy()
-                self.prev_board[a[1][0]][a[1][1]]=self.player_number
-                return a[1]
-
+        # print(state)
+        
+        opponent_number = 3-self.player_number
+        copy_state = state.copy()
+        
+        valid_actions= get_valid_actions(copy_state, self.player_number)
+        winning_position = self.find_winning_position(copy_state, self.player_number)
+        if winning_position:
+            # print('Winning Position: ', winning_position)
+            return winning_position
+        
+        opp_winning_position = self.find_winning_position(state, opponent_number)
+        if opp_winning_position:
+            # print('Opponent Winning Position: ', opp_winning_position)
+            return opp_winning_position
+        
         root=Node(state)
         root.player=self.player_number
-        a=set(get_valid_actions(state))
-        other_player=3-self.player_number
-        new_state=state.copy()
-        for move in a:
-            new_state[move[0]][move[1]]=self.player_number
-            # print(new_state)
-            if check_my_win(new_state, move, self.player_number)[0]:
-                self.prev_board=state.copy()
-                self.prev_board[move[0]][move[1]]=self.player_number
-                return move
-            new_state[move[0]][move[1]]=0
+        for i in get_valid_actions(state):
+            root.children_left[i]=[0,0]
+    
+        moves=set(root.children_left.copy())
         
-        for move in a:
-            new_state[move[0]][move[1]]=other_player
-            if check_my_win(new_state, move, other_player)[0]:
-                self.prev_board=state.copy()
-                self.prev_board[move[0]][move[1]]=self.player_number
-                return move
-            new_state[move[0]][move[1]]=0
-        moves=a.copy()
-        for move in a:
-            new_state[move[0]][move[1]]=self.player_number
-            moves.remove(move)
-            f=0
-            for move2 in moves:
-                new_state[move2[0]][move2[1]]=self.player_number
-                if check_my_win(new_state, move2, self.player_number)[0]:
-                    f+=1
-                    if f==2:
-                        self.prev_board=state.copy()
-                        self.prev_board[move[0]][move[1]]=self.player_number
-                        return move
-                new_state[move2[0]][move2[1]]=0 
-            new_state[move[0]][move[1]]=0
-            moves.add(move)
-        for move in a:
-            new_state[move[0]][move[1]]=3-self.player_number
-            moves.remove(move)
-            f=0
-            for move2 in moves:
-                new_state[move2[0]][move2[1]]=3-self.player_number
-                if check_my_win(new_state, move2, 3-self.player_number)[0]:
-                    f+=1
-                    if f==2:
-                        self.prev_board=state.copy()
-                        self.prev_board[move[0]][move[1]]=self.player_number
-                        return move
-                new_state[move2[0]][move2[1]]=0 
-            new_state[move[0]][move[1]]=0
-            moves.add(move)
-        board_size=(len(state)+1)//2
-        corners=get_all_corners(len(state))
-        d_my={}
-        g_my={}
-        d={}
-        g={}
-        for i in corners:
-            l=self.get_corner_alkenes(i,board_size)
-            l1=[]
-            for j in l:
-                if is_really_alkene(i,j[0],j[1],state):
-                    l1.append(j)
-            l=l1
-            for j in l:
-                if state[j[0]][j[1]]==3-self.player_number:
-                    if j in g:
-                        g[j].append(i)
-                    else:
-                        g[j]=[i]
-                if state[j[0]][j[1]]==self.player_number:
-                    if j in g_my:
-                        g_my[j].append(i)
-                    else:
-                        g_my[j]=[i]
-            if state[i[0]][i[1]]==3-self.player_number:
-                for j in l:
-                    if state[j[0]][j[1]]==0:
-                        if j in d:
-                            d[j]+=1
-                        else:
-                            d[j]=1
-            if state[i[0]][i[1]]==self.player_number:
-                for j in l:
-                    if state[j[0]][j[1]]==0:
-                        if j in d_my:
-                            d_my[j]+=1
-                        else:
-                            d_my[j]=1
-        if board_size==4:
-            for i in d_my:
-                if d_my[i]==2:
-                    self.prev_board=state.copy()
-                    self.prev_board[i[0]][i[1]]=self.player_number
-                    # print("BELLO")
-                    return i
-            for i in g_my:
-                if len(g_my[i])==2:
-                    if state[g_my[i][0][0]][g_my[i][0][1]]==0 and state[g_my[i][1][0]][g_my[i][1][1]]==self.player_number:
-                        self.prev_board=state.copy()
-                        self.prev_board[g_my[i][0][0]][g_my[i][0][1]]=self.player_number
-                        # print("BELLO2")
-                        return g_my[i][0]
-                    elif state[g_my[i][1][0]][g_my[i][1][1]]==0 and state[g_my[i][0][0]][g_my[i][0][1]]==self.player_number:
-                        self.prev_board=state.copy()
-                        self.prev_board[g_my[i][1][0]][g_my[i][1][1]]=self.player_number
-                        # print("BELLO3")
-                        return g_my[i][1]
-            for i in d:
-                if d[i]==2:
-                    self.prev_board=state.copy()
-                    self.prev_board[i[0]][i[1]]=self.player_number
-                    # print("BELLO")
-                    return i
-            for i in g:
-                if len(g[i])==2:
-                    if state[g[i][0][0]][g[i][0][1]]==0 and state[g[i][1][0]][g[i][1][1]]==3-self.player_number:
-                        self.prev_board=state.copy()
-                        self.prev_board[g[i][0][0]][g[i][0][1]]=self.player_number
-                        # print("BELLO2")
-                        return g[i][0]
-                    elif state[g[i][1][0]][g[i][1][1]]==0 and state[g[i][0][0]][g[i][0][1]]==3-self.player_number:
-                        self.prev_board=state.copy()
-                        self.prev_board[g[i][1][0]][g[i][1][1]]=self.player_number
-                        # print("BELLO3")
-                        return g[i][1]
-        # print('halautututut')
-        # t=time.time()
-        if isinstance(self.prev_board, np.ndarray):
-            # print('hi1i1i1')
-            for i in range(len(state)):
-                for j in range(len(state[0])):
-                    if state[i][j]==3-self.player_number and  self.prev_board[i][j]==0:
-                        # print(i,j,'hellooeoeoeoeoeoeoeoeoe')
-                        for neigh in get_neighbours(len(state), (i, j)):
-                            if state[neigh[0]][neigh[1]]==self.player_number:
-                            # print(neigh)
-                                c,f=alkene_detection_todo(neigh,self.prev_board,self.player_number)
-                                # print(c,f)
-                                if c==1.8700828:
-                                    for k in f:
-                                        if k[0]==(i,j) and state[k[1][0]][k[1][1]]==0:
-                                            self.prev_board=state.copy()
-                                            self.prev_board[k[1][0]][k[1][1]]=self.player_number
-                                            # print('time',time.time()-t)
-                                            return k[1]
-                                        elif k[1]==(i,j) and state[k[0][0]][k[0][1]]==0:
-                                            self.prev_board=state.copy()
-                                            self.prev_board[k[0][0]][k[0][1]]=self.player_number
-                                            # print('time',time.time()-t)
-                                            return k[0]
-                        
+        check1=self.evaluate_double_moves(state, self.player_number, moves)
+        check2=self.evaluate_double_moves(state, 3-self.player_number, moves)
+        if check1:
+            return check1
+        if check2:
+            return check2
         
-
-                                
-
-        root.children_left=get_my_valid_actions(state,self.player_number)
-        # for i in root.children_left:
-        #     print(*i,'hi')
+        no_of_random=50
+        check3=self.evaluate_triple_moves(state, self.player_number, moves, no_of_random)
+        check4=self.evaluate_triple_moves(state, 3-self.player_number, moves, no_of_random)
+        if check3:
+            return check3
+        if check4:
+            return check4
+        
+        check5=self.evaluate_moves_4_layers(state, self.player_number, moves, no_of_random)
+        check6=self.evaluate_moves_4_layers(state, 3-self.player_number, moves, no_of_random)
+        if check5:
+            return check5
+        if check6:
+            return check6
+                            
         for i in range(325):
             node=root
             while len(node.children_left)==0 and node.children :
                 node=self.select(node)
-            # print(node.state)
             node=self.expand(node)
             if not node:
                 continue
-            # print(node.state)
             win=0
             for j in range(3):
                 winner=self.rollout(node)
                 if(winner==self.player_number):
                     win+=1
-                # print(winner)
             loss=3-win
             tot_win=win-loss
             self.backpropagate(node, winner,tot_win)
-            # print(root.children[0].visits,root.children[0].wins)
-        # print(len(root.children))
-        # for i in root.children:
-        #     print(i.move,i.visits,i.wins)
-        best_node=None
-        best_val=-float("inf")
-        g=[]
-        for i in root.children:
-            c=self.ucb1(i,0.1)
-            if(c>best_val):
-                best_val=c
-                best_node=i
-        #     if get_corner(i.move,len(state))!=-1 or get_edge(i.move,len(state))!=-1 or self.is_adjacent(i.move,3-self.player_number,state) or self.is_adjacent2(x,3-self.player_number,state):
-        #         g.append(i)
-        #         if i.visits>best_val:
-        #             best_val=i.visits
-        #             best_node=i
-        #         elif i.visits==best_val:
-        #             if i.wins>best_node.wins:
-        #                 best_node=i
-        new_state=state.copy()
-        l=[]
-        # for i in g:
-        #         print(i.move,i.visits,i.wins)
-        #         if i.visits==best_node.visits and i.wins==best_node.wins:
-        #             new_state[i.move[0]][i.move[1]]=self.player_number
-        #             if check_my_win(new_state, i.move, self.player_number)[0]:
-        #                 return i.move
-        #             new_state[i.move[0]][i.move[1]]=3-self.player_number
-        #             if check_my_win(new_state, i.move, 3-self.player_number)[0]:
-        #                 return i.move
-        #             new_state[i.move[0]][i.move[1]]=0
-        #             l.append(i.move)
                 
-                    
-
-        # if len(l)>0:
-        #     return random.choice(l)
-        self.prev_board=state.copy()
-        self.prev_board[best_node.move[0]][best_node.move[1]]=self.player_number
+        best_node=None
+        best_val=-float('inf')
+        for i in root.children:
+                if i.visits>best_val:
+                    best_val=i.visits
+                    best_node=i
+                elif i.visits==best_val:
+                    if i.wins>best_node.wins:
+                        best_node=i
         return best_node.move
-    
-
-    def ucb1(self,child, exploration_factor=1.75):
-        """
-        Calculate the UCB1 value for a node.
-        """
-        if child.visits == 0:
-            return float('inf')  
-        win_rate = child.wins / child.visits
-        exploration_term = exploration_factor * np.sqrt(np.log(child.parent.visits) / child.visits)
-        c=alkene_detection(child.move,child.state,self.player_number)[0]
-        d=get_corner(child.move,len(child.state))
-        e=get_edge(child.move,len(child.state))
-        if(d!=-1):
-            win_rate+=(abs(win_rate))*(0.6 if win_rate<0 else 0.3)
-        if(e!=-1):
-            win_rate+=(abs(win_rate))*(0.2 if win_rate<0 else 0.1)
-        win_rate+=c*c*(abs(win_rate))*(0.4 if win_rate<0 else 0.15)
-        return win_rate + exploration_term
-    
-    def select(self,node):
-        """
-        Select the best node based on UCB1.
-        """
-        return max(node.children, key=lambda child: self.ucb1(child))
+                    
+    def is_alkene_like(self, move1, move2, board):     
+        n1=get_neighbours(len(board),move1)
+        n2=get_neighbours(len(board),move2)
+        common_neighbours=set(n1).intersection(n2)
+        if len(common_neighbours)==2:
+            if board[common_neighbours.pop()[0]][common_neighbours.pop()[1]]==0:
+                if board[common_neighbours.pop()[0]][common_neighbours.pop()[1]]==0:
+                    return True
+                
+        return False
 
     def expand(self,node):
-        """
-        Expand the current node by generating a new child for an unexplored move.
-        """
+        # Expand the current node by generating a new child for an unexplored move.
         available_moves = node.children_left
         if available_moves:
-            move = available_moves.pop()
+            move=random.choice(list(available_moves.keys()))
             new_state = node.state.copy()
             new_state[move[0]][move[1]]=node.player
             child_node = Node(state=new_state, parent=node)
             child_node.player = 3-node.player
             child_node.move=move
-            a=set(get_my_valid_actions(new_state,self.player_number))
-            child_node.children_left=a
+            child_node.children_left=available_moves
             node.children.append(child_node)
             return child_node
         return None
     
-    def rollout(self, node):
-        """
-        Simulate a random game starting from the current node's state.
-        """
+    def select(self,node):   
+        # Select the best node based on UCB1.
+        return max(node.children, key=lambda child: self.ucb1(child))
+
+    def rollout(self, node):  
+        # Simulate a random game starting from the current node's state.
         current_state = node.state.copy()
         current_player = node.player
-        a=get_my_valid_actions(current_state,self.player_number)
-        moves=set(a)
+        moves = set(get_valid_actions(current_state))
+        
         while moves:
-            move=random.choice(tuple(moves))
+            move=random.choice(list(moves))
             current_state[move[0]][move[1]] = current_player
-            t1=get_neighbours(len(current_state),move)
-            for x in t1:
-                if(current_state[x[0]][x[1]]==0):
-                    moves.add(x)
-            x=move
-            board=current_state
-            if(x[1]==(len(board)-1)//2):
-                if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2]==0 and is_really_alkene(x,x[0]-1,x[1]-2,board):
-                    moves.add((x[0]-1,x[1]-2))
-                if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2]==0 and is_really_alkene(x,x[0]-1,x[1]+2,board):
-                    moves.add((x[0]-1,x[1]+2))
-                if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1]==0 and is_really_alkene(x,x[0]-2,x[1]-1,board):
-                    moves.add((x[0]-2,x[1]-1))
-                if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1]==0 and is_really_alkene(x,x[0]-2,x[1]+1,board):
-                    moves.add((x[0]-2,x[1]+1))
-                if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1]==0 and is_really_alkene(x,x[0]+1,x[1]-1,board):
-                    moves.add((x[0]+1,x[1]-1))
-                if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1]==0 and is_really_alkene(x,x[0]+1,x[1]+1,board):
-                    moves.add((x[0]+1,x[1]+1))
-            elif(x[1]==((len(board)-1)//2)-1):
-                if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2]==0 and is_really_alkene(x,x[0]-1,x[1]-2,board):
-                    moves.add((x[0]-1,x[1]-2))
-                if is_valid(x[0],x[1]+2,len(board)) and board[x[0]][x[1]+2]==0 and is_really_alkene(x,x[0],x[1]+2,board):
-                    moves.add((x[0],x[1]+2))
-                if is_valid(x[0]-1,x[1]+1,len(board)) and board[x[0]-1][x[1]+1]==0 and is_really_alkene(x,x[0]-1,x[1]+1,board):
-                    moves.add((x[0]-1,x[1]+1))
-                if is_valid(x[0]+2,x[1]+1,len(board)) and board[x[0]+2][x[1]+1]==0 and is_really_alkene(x,x[0]+2,x[1]+1,board):
-                    moves.add((x[0]+2,x[1]+1))
-                if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1]==0 and is_really_alkene(x,x[0]+1,x[1]-1,board):
-                    moves.add((x[0]+1,x[1]-1))
-                if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1]==0 and is_really_alkene(x,x[0]-2,x[1]-1,board):
-                    moves.add((x[0]-2,x[1]-1))
-            elif(x[1]==((len(board)-1)//2)+1):
-                if is_valid(x[0]-1,x[1]-1,len(board)) and board[x[0]-1][x[1]-1]==0 and is_really_alkene(x,x[0]-1,x[1]-1,board):
-                    moves.add((x[0]-1,x[1]-1))
-                if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2]==0 and is_really_alkene(x,x[0]-1,x[1]+2,board):
-                    moves.add((x[0]-1,x[1]+2))
-                if is_valid(x[0]+2,x[1]-1,len(board)) and board[x[0]+2][x[1]-1]==0 and is_really_alkene(x,x[0]+2,x[1]-1,board):
-                    moves.add((x[0]+2,x[1]-1))
-                if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1]==0 and is_really_alkene(x,x[0]-2,x[1]+1,board):
-                    moves.add((x[0]-2,x[1]+1))
-                if is_valid(x[0],x[1]-2,len(board)) and board[x[0]][x[1]-2]==0 and is_really_alkene(x,x[0],x[1]-2,board):
-                    moves.add((x[0],x[1]-2))
-                if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1]==0 and is_really_alkene(x,x[0]+1,x[1]+1,board):
-                    moves.add((x[0]+1,x[1]+1))
-            elif(x[1]>((len(board)-1)//2)+1):
-                if is_valid(x[0]-1,x[1]-1,len(board)) and board[x[0]-1][x[1]-1]==0 and is_really_alkene(x,x[0]-1,x[1]-1,board):
-                    moves.add((x[0]-1,x[1]-1))
-                if is_valid(x[0]-1,x[1]+2,len(board)) and board[x[0]-1][x[1]+2]==0 and is_really_alkene(x,x[0]-1,x[1]+2,board):
-                    moves.add((x[0]-1,x[1]+2))
-                if is_valid(x[0]+2,x[1]-1,len(board)) and board[x[0]+2][x[1]-1]==0 and is_really_alkene(x,x[0]+2,x[1]-1,board):
-                    moves.add((x[0]+2,x[1]-1))
-                if is_valid(x[0]-2,x[1]+1,len(board)) and board[x[0]-2][x[1]+1]==0 and is_really_alkene(x,x[0]-2,x[1]+1,board):
-                    moves.add((x[0]-2,x[1]+1))
-                if is_valid(x[0]+1,x[1]-2,len(board)) and board[x[0]+1][x[1]-2]==0 and is_really_alkene(x,x[0]+1,x[1]-2,board):
-                    moves.add((x[0]+1,x[1]-2))
-                if is_valid(x[0]+1,x[1]+1,len(board)) and board[x[0]+1][x[1]+1]==0 and is_really_alkene(x,x[0]+1,x[1]+1,board):
-                    moves.add((x[0]+1,x[1]+1))
-            elif(x[1]<((len(board)-1)//2)-1):
-                if is_valid(x[0]-1,x[1]-2,len(board)) and board[x[0]-1][x[1]-2]==0 and is_really_alkene(x,x[0]-1,x[1]-2,board):
-                    moves.add((x[0]-1,x[1]-2))
-                if is_valid(x[0]+1,x[1]+2,len(board)) and board[x[0]+1][x[1]+2]==0 and is_really_alkene(x,x[0]+1,x[1]+2,board):
-                    moves.add((x[0]+1,x[1]+2))
-                if is_valid(x[0]-1,x[1]+1,len(board)) and board[x[0]-1][x[1]+1]==0 and is_really_alkene(x,x[0]-1,x[1]+1,board):
-                    moves.add((x[0]-1,x[1]+1))
-                if is_valid(x[0]+2,x[1]+1,len(board)) and board[x[0]+2][x[1]+1]==0 and is_really_alkene(x,x[0]+2,x[1]+1,board):
-                    moves.add((x[0]+2,x[1]+1))
-                if is_valid(x[0]+1,x[1]-1,len(board)) and board[x[0]+1][x[1]-1]==0 and is_really_alkene(x,x[0]+1,x[1]-1,board):
-                    moves.add((x[0]+1,x[1]-1))
-                if is_valid(x[0]-2,x[1]-1,len(board)) and board[x[0]-2][x[1]-1]==0 and is_really_alkene(x,x[0]-2,x[1]-1,board):
-                    moves.add((x[0]-2,x[1]-1))
-            if check_my_win(current_state, move, current_player)[0]:
+            if check_win(current_state, move, current_player)[0]:
                 return current_player  # Return winner if found
-            current_player = 3 - current_player  
+            current_player = 3 - current_player  # Alternate player turns
             moves.remove(move)
-              # Alternate player turns
-        return 0  # Return draw or no winner if moves are exhausted
 
+        return 0  # Return draw or no winner if moves are exhausted
     def backpropagate(self, node, winner,tot_win):
         """
         Propagate the result of the simulation up to the root node.
@@ -933,6 +332,39 @@ class AIPlayer:
             node.wins += tot_win
             node = node.parent
 
+            
+    def ucb1(self, child, exploration_factor=1.75):
+        """
+        Calculate the UCB1 value for a node, with additional scoring if an alkene-like pattern is formed.
+        """
+        if child.visits == 0:
+            return float('inf')  
+        win_rate = child.wins / child.visits
+        exploration_term = exploration_factor * np.sqrt(np.log(child.parent.visits) / child.visits)
+        
+        # Add bonuses for board position (corner, edge)
+        if get_corner(child.move, len(child.state)) != -1:
+           win_rate+=(abs(win_rate))*(0.8 if win_rate<0 else 0.3)
+        if get_edge(child.move, len(child.state)) != -1:
+            win_rate+=(abs(win_rate))*(0.2 if win_rate<0 else 0.1)
+        
+        # Add bonus for adjacent to player's or opponent's moves
+        if self.is_adjacent(child.move, 3 - child.player, child.state):
+            win_rate += win_rate * 0.1
+        if self.is_adjacent(child.move, child.player, child.state):
+            win_rate += win_rate * 0.1
 
+        # Check for alkene-like formation and boost score
+        for move in get_valid_actions(child.state):
+            if self.is_alkene_like(child.move, move):
+                win_rate += win_rate * 0.8  # Boost for alkene-like patterns
 
-    
+        return win_rate + exploration_term
+ 
+    def is_adjacent(self,move,pnum,board):
+        neighbours=get_neighbours(len(board),move)
+        h=[]
+        for i in neighbours:
+            if board[i[0]][i[1]]==pnum:
+                return True
+        return False

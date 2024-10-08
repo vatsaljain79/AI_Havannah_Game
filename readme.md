@@ -13,6 +13,9 @@ Havannah is played on a hexagonal grid where players take turns placing their pi
 2. **Fork**: A path connecting three different edges of the board.
 3. **Ring**: A closed loop of pieces surrounding empty or occupied spaces.
 
+
+![image](https://github.com/user-attachments/assets/03bc4878-537d-4275-ae80-eee16b5ab1bc)
+
 The game ends when a player successfully completes one of these structures or if their time budget is exhausted.
 
 ## Features
